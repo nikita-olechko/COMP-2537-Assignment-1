@@ -37,15 +37,7 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-app.use(session({
-  secret: node_session_secret,
-  store: mongoStore,
-  saveUninitialized: false,
-  resave: true,
-  cookie: {
-    maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
-  }
-}));
+
 
 
 var mongoStore = MongoStore.create({
@@ -54,6 +46,16 @@ var mongoStore = MongoStore.create({
         secret: mongodb_session_secret
     }
 })
+
+app.use(session({
+    secret: node_session_secret,
+    store: mongoStore,
+    saveUninitialized: false,
+    resave: true,
+    cookie: {
+        maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
+    }
+}));
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
