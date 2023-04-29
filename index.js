@@ -107,7 +107,10 @@ app.get('/members', (req, res) => {
 });
 
 
-
+// add  404 page that "catches" all invalid page hits and that sets the status code to 404.
+app.use(function (req, res, next) {
+    res.status(404).send("Sorry can't find that!");
+});
 
 // Handle sign out form submission
 app.post('/signout', (req, res) => {
