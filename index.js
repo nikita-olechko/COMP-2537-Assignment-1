@@ -55,13 +55,6 @@ var mongoStore = MongoStore.create({
     }
 })
 
-app.use(session({
-    secret: node_session_secret,
-    store: mongoStore, //default is memory store 
-    saveUninitialized: false,
-    resave: true
-}));
-
 app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.status(500).send('Something broke!');
