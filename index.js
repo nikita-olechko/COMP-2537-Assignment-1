@@ -37,12 +37,20 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-var mongoStore = MongoStore.create({
-    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
-    crypto: {
-        secret: mongodb_session_secret
+app.use(session({
+    secret: node_session_secret,
+    store: MongoStore.create({
+        mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
+        crypto: {
+            secret: mongodb_session_secret
+        }
+    }),
+    saveUninitialized: false,
+    resave: true,
+    cookie: {
+        maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
     }
-})
+}));
 
 app.use(session({
     secret: node_session_secret,
