@@ -25,6 +25,7 @@ const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 
 const node_session_secret = process.env.NODE_SESSION_SECRET;
+/* END secret section */
 
 var {
     database
@@ -36,31 +37,19 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-const createMongoStore = async () => {
-    const mongoStore = MongoStore.create({
-        mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
-        crypto: {
-            secret: mongodb_session_secret
-        }
-    });
+var mongoStore = MongoStore.create({
+    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
+    crypto: {
+        secret: mongodb_session_secret
+    }
+})
 
-    await mongoStore.client.connect();
-    return mongoStore;
-};
-
-app.use(async (req, res, next) => {
-    const mongoStore = await createMongoStore();
-
-    app.use(session({
-        secret: node_session_secret,
-        store: mongoStore,
-        saveUninitialized: false,
-        resave: true
-    }));
-
-    next();
-});
-
+app.use(session({
+    secret: node_session_secret,
+    store: mongoStore, //default is memory store 
+    saveUninitialized: false,
+    resave: true
+}));
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
@@ -254,4 +243,8 @@ app.post('/signin', async (req, res) => {
     res.redirect('/members');
 });
 
-app.listen(process.env.PORT || 3000);
+// listen for requests :)
+const listener = app.listen(process.env.PORT || 3000, () => {
+    console.log(`Server started on port ${listener.address().port}`);
+}
+);
