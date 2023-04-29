@@ -83,9 +83,13 @@ app.get('/members', (req, res) => {
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <body>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6 text-center">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-md-6 text-center">
+<h1> Welcome ${req.session.user.username}!</h1>
+<h2> You are now a member of our site!</h2>
+<h3> You can now see the members only content below!</h3>
+<br>
         <img src="/00${num}.jpg" class="" width="400px" height="400px">
         <br>
         <form method="post" action="/signout">
