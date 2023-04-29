@@ -37,9 +37,6 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-
-
-
 var mongoStore = MongoStore.create({
     mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
     crypto: {
@@ -48,14 +45,15 @@ var mongoStore = MongoStore.create({
 })
 
 app.use(session({
-    secret: node_session_secret,
-    store: mongoStore,
-    saveUninitialized: false,
-    resave: true,
-    cookie: {
-        maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
-    }
+  secret: node_session_secret,
+  store: mongoStore,
+  saveUninitialized: false,
+  resave: true,
+  cookie: {
+    maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
+  }
 }));
+
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
@@ -66,6 +64,7 @@ app.use(function (req, res, next) {
     res.setHeader('X-Powered-By', 'Express');
     next();
 });
+
 
 
 app.get('/members', (req, res) => {
@@ -109,10 +108,7 @@ app.get('/members', (req, res) => {
 });
 
 
-// add  404 page that "catches" all invalid page hits and that sets the status code to 404.
-app.use(function (req, res, next) {
-    res.status(404).send("Sorry can't find that!");
-});
+
 
 // Handle sign out form submission
 app.post('/signout', (req, res) => {
