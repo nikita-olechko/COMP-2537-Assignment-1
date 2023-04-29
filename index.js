@@ -15,8 +15,6 @@ const Joi = require("joi");
 
 app.set('view engine', 'pug');
 
-const expireTime = 24 * 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
-
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
 const mongodb_user = process.env.MONGODB_USER;
@@ -45,13 +43,13 @@ var mongoStore = MongoStore.create({
 })
 
 app.use(session({
-  secret: node_session_secret,
-  store: mongoStore,
-  saveUninitialized: false,
-  resave: true,
-  cookie: {
-    maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
-  }
+    secret: node_session_secret,
+    store: mongoStore,
+    saveUninitialized: false,
+    resave: true,
+    cookie: {
+        maxAge: 60 * 60 * 1000 // 1 hour in milliseconds
+    }
 }));
 
 
@@ -128,31 +126,119 @@ app.use(express.static(__dirname + "/public"));
 app.get('/', (req, res) => {
     if (req.session.user) {
         // If the user is currently logged in, render the home page welcoming them and showing them the option to go to the members area and sign out
-        res.send(`<h1>Welcome back ${req.session.user.username}!</h1><p><a href='/members'>Members Area</a><form method="post" action="/signout">
-          <button type="submit" class="btn btn-danger mt-3">Sign Out</button>
-        </form>`);
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Welcome back ${req.session.user.username}!</title>
+                <!-- add Bootstrap stylesheet -->
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+            </head>
+            <body>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <h1>Welcome back ${req.session.user.username}!</h1>
+                            <br>
+                            <a href='/members' class="btn btn-primary">Members Area</a>
+                            <br><br>
+                            <form method="post" action="/signout">
+                                <button type="submit" class="btn btn-danger">Sign Out</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- add Bootstrap JavaScript -->
+                <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/XvoG1uNus5LasEy" crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+            </body>
+            </html>
+        `);
     } else {
         // If the user is not currently logged in, render the home page with the options to sign up or sign in
-        res.send(`<h1>Welcome to the site!</h1><p><a href='/signup'>Sign Up</a> | <a href='/signin'>Sign In</a></p>`);
+        res.send(`
+        <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Sign in}!</title>
+                <!-- add Bootstrap stylesheet -->
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+            </head>
+            <body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="text-center mb-4">Welcome to the site!</h1>
+                        <div class = "d-grid row justify-content-center gap-2" >
+                            <a class="btn btn-primary" href="/signup">Sign Up</a>
+                            <a class="btn btn-secondary" href="/signin">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add Bootstrap JavaScript -->
+    
+                <script src = "https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity = "sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/XvoG1uNus5LasEy"
+                crossorigin = "anonymous" > </script> <script src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity = "sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin = "anonymous" > </script> <script src = "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity = "sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin = "anonymous" > </script>
+        </body></html>
+`);
     }
 });
 
 // Render the sign up form
 app.get('/signup', (req, res) => {
-    res.send(`
-        <h1>Sign Up</h1>
-        <form method='post' action='/signup'>
-            <label for='username'>Username:</label>
-            <input type='text' id='username' name='username' required><br><br>
-            <label for='password'>Password:</label>
-            <input type='password' id='password' name='password' required><br><br>
-            <input type='submit' value='Sign Up'>
-        </form>
-        <br>
-            <button type = 'button'
-        onclick = "location.href='/'"> Home </button>
-    `);
+    let html = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Sign Up</title>
+        <!-- add Bootstrap stylesheet -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      </head>
+      <body>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+              <h1>Sign Up</h1>
+              <form method='post' action='/signup'>
+                <div class="form-group">
+                  <label for='username'>Username:</label>
+                  <input type='text' class="form-control" id='username' name='username' required>
+                </div>
+                <div class="form-group">
+                  <label for='password'>Password:</label>
+                  <input type='password' class="form-control" id='password' name='password' required>
+                </div>
+                <button type='submit' class="btn btn-primary">Sign Up</button>
+              </form>
+              <br>
+              <a href="/" class="btn btn-secondary">Home</a>
+            </div>
+          </div>
+        </div>
+        <!-- add Bootstrap JavaScript -->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/XvoG1uNus5LasEy" crossorigin="anonymous"></>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+      </body>
+    </html>
+  `;
+    res.send(html);
 });
+
 
 // Handle sign up form submission
 app.post('/signup', async (req, res) => {
@@ -204,18 +290,46 @@ app.post('/signup', async (req, res) => {
 
 // Sign in page
 app.get('/signin', (req, res) => {
-    res.send(`
-        <h1>Sign In</h1>
-        <form method='post' action='/signin'>
+    // If the user is already logged in, redirect to the members page
+    if (req.session.user) {
+        res.redirect('/members');
+        return;
+    }
+
+    // Render the sign-in form
+    var html = `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sign In</title>
+    <!-- add Bootstrap stylesheet -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+          <h1>Sign In</h1>
+          <form method='post' action='/signin'>
             <label for='username'>Username:</label>
             <input type='text' id='username' name='username' required><br><br>
             <label for='password'>Password:</label>
             <input type='password' id='password' name='password' required><br><br>
-            <input type='submit' value='Sign In'>
-        </form>
-        <br>
-        <button type='button' onclick="location.href='/'">Home</button>
-    `);
+            <input type='submit' value='Sign In' class="btn btn-primary">
+          </form>
+          <br>
+          <a href="/" class="btn btn-secondary">Home</a>
+        </div>
+      </div>
+    </div>
+    <!-- add Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/XvoG1uNus5LasEy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+  </html>
+  `;
+    res.send(html);
 });
 
 
@@ -259,5 +373,4 @@ app.get("*", (req, res) => {
 // listen for requests :)
 const listener = app.listen(process.env.PORT || 3000, () => {
     console.log(`Server started on port ${listener.address().port}`);
-}
-);
+});
