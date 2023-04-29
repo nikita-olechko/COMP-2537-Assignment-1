@@ -25,7 +25,6 @@ const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 
 const node_session_secret = process.env.NODE_SESSION_SECRET;
-/* END secret section */
 
 var {
     database
@@ -36,19 +35,32 @@ const userCollection = database.db(mongodb_database).collection('users');
 app.use(express.urlencoded({
     extended: false
 }));
-var mongoStore = MongoStore.create({
-    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
-    crypto: {
-        secret: mongodb_session_secret
-    }
-})
 
-app.use(session({
-    secret: node_session_secret,
-    store: mongoStore, //default is memory store 
-    saveUninitialized: false,
-    resave: true
-}));
+const createMongoStore = async () => {
+    const mongoStore = MongoStore.create({
+        mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}?retryWrites=true`,
+        crypto: {
+            secret: mongodb_session_secret
+        }
+    });
+
+    await mongoStore.client.connect();
+    return mongoStore;
+};
+
+app.use(async (req, res, next) => {
+    const mongoStore = await createMongoStore();
+
+    app.use(session({
+        secret: node_session_secret,
+        store: mongoStore,
+        saveUninitialized: false,
+        resave: true
+    }));
+
+    next();
+});
+
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
@@ -241,6 +253,3 @@ app.post('/signin', async (req, res) => {
     // Redirect to members area
     res.redirect('/members');
 });
-
-
-app.listen(7050, () => console.log('Server running on port 7050'));
