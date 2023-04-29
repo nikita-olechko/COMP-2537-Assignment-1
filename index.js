@@ -54,6 +54,12 @@ app.use(session({
   }
 }));
 
+app.get("*", (req, res) => {
+    res.status(404);
+    // res.send("Page not found - 404");
+    //send a prettier html 404 error
+    res.sendFile(__dirname + "/public/404.html");
+})
 
 app.use(function (err, req, res, next) {
     console.error(err.stack);
