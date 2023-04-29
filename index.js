@@ -253,3 +253,5 @@ app.post('/signin', async (req, res) => {
     // Redirect to members area
     res.redirect('/members');
 });
+
+app.listen(process.env.PORT || 3000);
