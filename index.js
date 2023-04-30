@@ -378,6 +378,20 @@ app.post('/signin', async (req, res) => {
         password
     } = req.body;
 
+    // Validate input
+    const schema = Joi.object({
+        username: Joi.string().alphanum().min(3).max(20).required(),
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
+    });
+    const validationResult = schema.validate({
+        username,
+        password
+    });
+    if (validationResult.error) {
+        res.status(400).send(`Invalid username or password. <a href="/">Go back to home</a>`);
+        return;
+    }
+
     // Check if username exists
     const existingUser = await userCollection.findOne({
         username: username
