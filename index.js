@@ -148,14 +148,21 @@ app.get('/members', (req, res) => {
 
 
 // Handle sign out form submission
+// Handle sign out form submission
 app.post('/signout', (req, res) => {
     // Clear the user session and redirect to home page
     req.session.user = null;
-    res.redirect('/');
-    //delete the session cookie from the database
-    req.session.destroy();
-    return;
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+            return res.redirect('/');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
+        return
+    });
 });
+
 
 
 
