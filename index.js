@@ -152,6 +152,8 @@ app.post('/signout', (req, res) => {
     // Clear the user session and redirect to home page
     req.session.user = null;
     res.redirect('/');
+    //delete the session cookie from the database
+    req.session.destroy();
     return;
 });
 
